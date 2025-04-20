@@ -20,19 +20,23 @@
       font-family: 'Comic Sans MS', cursive, sans-serif;
     }
 
-    .phone {
-      width: 360px;
-      height: 640px;
-      border: 16px solid #333;
-      border-radius: 30px;
-      overflow: hidden;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
-      background: linear-gradient(to bottom, #87cefa, #4caf50 60%, #ffd700 100%);
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      position: relative;
-    }
+    .game-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #4caf50, #87cefa, #ffcf25);
+    background-size: 400% 400%;
+    animation: gradientPhone 10s ease infinite;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    border-radius: 16px;
+    margin: auto;
+  }    
 
     .header {
       display: flex;
@@ -130,7 +134,7 @@
   </style>
 </head>
 <body>
-  <div class="phone">
+  <div class="game-container">
     <!-- Decorative Bubbles -->
     <div class="bubble-decor"></div>
     <div class="bubble-decor"></div>
