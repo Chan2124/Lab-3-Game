@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JourBee Menu</title>
+  <style>
+    /* Base styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #222; height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Comic Sans MS', sans-serif; }
+
+    .phone { width: 360px; height: 640px; border: 16px solid #333; border-radius: 30px; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.6); position: relative; background: linear-gradient(to bottom, #87cefa, #4caf50 60%, #ffd700 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    /* Clouds */
+    .cloud { position: absolute; background: #fff; width: 80px; height: 50px; border-radius: 50%; opacity: 0.8; animation: cloudMove linear infinite; }
+    .cloud:nth-child(1) { top: 60px; animation-duration: 40s; }
+    .cloud:nth-child(2) { top: 120px; animation-duration: 30s; }
+    .cloud:nth-child(3) { top: 180px; animation-duration: 50s; }
+    .cloud::before, .cloud::after { content: ''; position: absolute; background: #fff; width: 60px; height: 60px; border-radius: 50%; top: -25px; left: 10px; }
+    .cloud::after { width: 50px; height: 50px; top: -15px; left: auto; right: 10px; }
+    @keyframes cloudMove { 0% { transform: translateX(-150px); } 100% { transform: translateX(510px); } }
+
+    /* Header enhancements */
+    .header { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; align-items: center; z-index: 10; }
+    .header .bee-icon-placeholder { position: relative; animation: none; width: 32px; height: 32px; }
+
+    /* Music toggle button */
+    .music-btn { position: absolute; top: 20px; left: 20px; z-index: 11; background: rgba(255,255,255,0.7); border: 2px solid #fff; border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 5px #ffcf25; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+    .music-btn:hover { transform: scale(1.1); }
+
+    /* Bee flight animation */
+    .bee-icon-placeholder:not(.header .bee-icon-placeholder) { width: 40px; height: 40px; background: gold; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5); animation: fly 6s ease-in-out infinite, pulse 1.5s infinite ease-in-out; position: absolute; }
+    @keyframes pulse { 0%{ transform: scale(1);}50%{ transform: scale(1.1);}100%{ transform: scale(1);} }
+    @keyframes fly { 0%{ transform: translate(0,0) scale(1);}25%{ transform: translate(50px,-20px) scale(1.1);}50%{ transform: translate(100px,0) scale(1);}75%{ transform: translate(50px,-20px) scale(1.1);}100%{ transform: translate(0,0) scale(1);} }
+
+    .badge-placeholder { width: 40px; height: 40px; background: gold; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5); animation: pulse 2s infinite ease-in-out; }
+
+    /* Logo sparkle effect */
+    .logo { font-size: 2.5rem; font-weight: bold; color: #ffcf25; text-shadow: 2px 2px #000, 0 0 10px #87cefa, 0 0 20px #4caf50; animation: glow 3s infinite alternate; margin-bottom: 2rem; text-align: center; cursor: pointer; transition: transform 0.3s; }
+    .logo:hover { transform: scale(1.2); animation: sparkle 1s infinite alternate; }
+    @keyframes glow { 0%{ text-shadow: 2px 2px #000,0 0 10px #87cefa,0 0 20px #4caf50;}100%{ text-shadow:2px 2px #000,0 0 20px #ffd700,0 0 30px #87cefa;} }
+    @keyframes sparkle { 0%{ text-shadow:0 0 10px #fff,0 0 20px #fff,0 0 30px #ffd700;}100%{ text-shadow:0 0 15px #ffd700,0 0 25px #ffcf25,0 0 35px #ff8c00;} }
+
+    /* Buttons with shimmering effect */
+    .buttons { display: flex; flex-direction: column; align-items: center; gap: 1rem; flex-grow: 1; z-index: 1; }
+    .menu-btn { width: 220px; height: 60px; background: linear-gradient(45deg,#ffcf25,#ffd700,#ff8c00); background-size:200%200%; border:3px solid #fff; border-radius:12px; color:#333; font-size:1.3rem; font-weight:bold; box-shadow:0 0 10px #ffcf25; text-shadow:1px 1px #fff; cursor:pointer; transition:transform 0.3s,background-position 0.5s; animation: shimmer 3s infinite; }
+    .menu-btn:hover { transform: scale(1.1) rotate(-5deg); box-shadow:0 0 15px #ffd700; background-position:100% 0; }
+    @keyframes shimmer{0%{background-position:0 0;}100%{background-position:100% 0;} }
+
+    /* Mascot with buzzing effect */
+    .mascot-placeholder { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width:80px; height:80px; background:radial-gradient(circle,#ffd700 0%,#ffcf25 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.5); color:white; z-index:1; animation:buzz 1.5s infinite; }
+    @keyframes buzz{0%,100%{transform:translateX(-50%) rotate(0deg);}50%{transform:translateX(-50%) rotate(-5deg);} }
+
+    /* Enhanced Ground with Grass and Flowers */
+    .ground { position: absolute; bottom: 0; width: 100%; height: 140px; overflow: hidden; }
+    /* Grass blades */
+    .grass-blade { position: absolute; bottom: 0; width: 4px; background: #388e3c; border-radius: 2px; animation: sway 4s infinite ease-in-out; transform-origin: bottom; }
+    @keyframes sway { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(5deg); } }
+    /* Flowers */
+    .flower { position: absolute; bottom: 10px; width: 14px; height: 14px; background: red; border-radius: 50%; animation: bloom 3s infinite alternate; }
+    @keyframes bloom { 0% { transform: scale(0.5); } 100% { transform: scale(1.5); } }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <!-- Clouds -->
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="bee-icon-placeholder"></div>
+      <div class="badge-placeholder"></div>
+    </div>
+    <!-- Music Toggle -->
+    <button class="music-btn" id="music-toggle">🎵</button>
+
+    <!-- Logo -->
+    <div class="logo">JOUR<br><span style="font-size: 2rem;">BEE</span></div>
+
+    <!-- Buttons -->
+    <div class="buttons">
+      <a href="levels.html"><button class="menu-btn">PLAY</button></a>
+      <a href="catalog.html"><button class="menu-btn">BEES CATALOG</button></a>
+      <a href="about.html"><button class="menu-btn">ABOUT</button></a>
+    </div>
+
+    <!-- Mascot -->
+    <div class="mascot-placeholder">🐝</div>
+
+    <!-- Enhanced Ground -->
+    <div class="ground">
+      <!-- Grass blades -->
+      <div class="grass-blade" style="left: 15px; height: 40px;"></div>
+      <div class="grass-blade" style="left: 40px; height: 30px; animation-duration: 3s;"></div>
+      <div class="grass-blade" style="left: 65px; height: 45px; animation-duration: 5s;"></div>
+      <div class="grass-blade" style="left: 90px; height: 35px; animation-duration: 4.5s;"></div>
+      <div class="grass-blade" style="left: 115px; height: 40px; animation-duration: 4s;"></div>
+      <div class="grass-blade" style="left: 140px; height: 50px; animation-duration: 3.5s;"></div>
+      <div class="grass-blade" style="left: 165px; height: 30px; animation-duration: 4.2s;"></div>
+      <div class="grass-blade" style="left: 190px; height: 45px; animation-duration: 3.8s;"></div>
+      <div class="grass-blade" style="left: 215px; height: 35px; animation-duration: 5s;"></div>
+      <div class="grass-blade" style="left: 240px; height: 40px; animation-duration: 3.2s;"></div>
+      <div class="grass-blade" style="left: 265px; height: 50px; animation-duration: 4.7s;"></div>
+      <div class="grass-blade" style="left: 290px; height: 30px; animation-duration: 3.6s;"></div>
+      <div class="grass-blade" style="left: 315px; height: 45px; animation-duration: 4.9s;"></div>
+      <div class="grass-blade" style="left: 340px; height: 35px; animation-duration: 3.4s;"></div>
+
+      <!-- Flowers -->
+      <div class="flower" style="left: 60px; background: #e91e63;"></div>
+      <div class="flower" style="left: 180px; background: #ffeb3b;"></div>
+      <div class="flower" style="left: 300px; background: #9c27b0;"></div>
+    </div>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bg-music" autoplay loop playsinline>
+    <source src="child.mp3" type="audio/mpeg"/>
+  </audio>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var audio = document.getElementById('bg-music');
+      var musicBtn = document.getElementById('music-toggle');
+      var isMuted = false;
+      audio.volume = 0.5;
+      audio.play().catch(function(){});
+      var playOnInteraction = function() {
+        audio.play();
+        window.removeEventListener('click', playOnInteraction);
+      };
+      window.addEventListener('click', playOnInteraction);
+      musicBtn.addEventListener('click', function () {
+        isMuted = !isMuted;
+        audio.muted = isMuted;
+        musicBtn.textContent = isMuted ? '🔇' : '🎵';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 1rem;
+  background: #fffafc;
+  height: 100vh;
+}
+
+#puzzle {
+  display: grid;
+  grid-template-columns: repeat(3, 100px); /* adjust to size */
+  grid-template-rows: repeat(3, 100px);
+  gap: 2px;
+  margin: auto;
+  width: max-content;
+}
+
+.piece {
+  width: 100px;
+  height: 100px;
+  background-image: url('floy.jpg'); /* change to your puzzle image */
+  background-size: 300px 300px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+
+#message {
+  font-size: 1rem;
+  color: #2e8b57;
+  text-align: center;
+}
+
+/* Optional: Better look for very small phones */
+@media (max-width: 400px) {
+  #puzzle {
+    max-width: 240px;
+    gap: 4px;
+  }
+
+  #message {
+    font-size: 0.9rem;
+  }
+}

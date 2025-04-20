@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 3</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      position: relative;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Comic Sans MS', sans-serif;
+      background: linear-gradient(45deg, #222, #444, #222);
+      background-size: 600% 600%;
+      animation: gradientBG 20s ease infinite;
+    }
+    @keyframes gradientBG {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #bubbles {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; pointer-events: none; z-index: 0;
+    }
+    .bubble {
+      position: absolute; bottom: -50px; border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      animation: rise var(--rise-duration) linear infinite;
+    }
+    @keyframes rise {
+      0%   { transform: translateY(0) scale(0.5); opacity: 0.7; }
+      100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
+    }
+
+    .game-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #4caf50, #87cefa, #ffcf25);
+  background-size: 400% 400%;
+  animation: gradientPhone 10s ease infinite;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  border-radius: 16px;
+  margin: auto;
+}
+
+    @keyframes gradientPhone {
+      0%   { background-position: 0% 0%; }
+      50%  { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    h1 { margin-top: 60px; font-size: 1.6rem; color: #ffcf25; text-shadow: 1px 1px #000; text-align: center; }
+    #puzzle { display: grid; grid-template-columns: repeat(4, 60px); grid-template-rows: repeat(4, 60px); gap: 4px; margin: 1rem 0; }
+    .piece { width: 60px; height: 60px; background-image: url('lvl3-Update.jpg'); background-size: 240px 240px; cursor: pointer; transition: transform 0.3s ease; border-radius: 8px; box-shadow: 1px 1px 4px rgba(0,0,0,0.3); }
+
+    #rotation-count, #timer { font-size: 1rem; color: #fff; text-align: center; margin: 4px 0; text-shadow: 1px 1px #000; }
+    #timer { font-weight: bold; font-size: 1.1rem; animation: glowTimer 2s infinite alternate; }
+    @keyframes glowTimer { 0% { text-shadow: 0 0 5px #fbff00, 0 0 15px #ff0000; } 100% { text-shadow: 0 0 10px #ff7373, 0 0 25px #b2ff4d; } }
+
+    .ground { position: absolute; bottom: 0; width: 100%; height: 100px; background: linear-gradient(to top, #444 0%, #4caf50 80%); border-top: 5px solid #222; }
+    .pause-btn { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); padding: 8px 20px; background: #ffcf25; border: 2px solid #333; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; color: #000; box-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
+    .overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 998; }
+    .menu-container, .win-container { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 0 10px rgba(255,255,255,0.6); z-index: 999; }
+    .menu-container { background: rgba(0,0,0,0.8); }
+    .menu-container button, .win-container button { display: block; width: 100%; margin: 10px 0; padding: 10px; font-size: 1rem; border: 2px solid #fff; background: #ffcf25; color: #000; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+    .menu-container button:hover, .win-container button:hover { transform: scale(1.05); background: #dbd000; }
+    .win-container { width: 80%; background: rgba(255,255,255,0.9); border: 2px solid #333; }
+    .win-container h2 { font-size: 1.4rem; color: #333; margin-bottom: 0.5rem; }
+    .win-container p { font-size: 1rem; color: #555; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div id="bubbles"></div>
+  <div class="game-container">
+    <h1>Level 3</h1>
+    <audio id="bg-music" src="music.mp3" loop></audio>
+    <button class="pause-btn" id="pause-btn">Pause</button>
+    <div id="puzzle"></div>
+    <p id="rotation-count">Rotations: 0 / 40</p>
+    <p id="timer"></p>
+    <div class="overlay" id="overlay"></div>
+    <div class="menu-container" id="menu-container">
+      <button id="resume-btn">Resume</button>
+      <button id="retry-btn">Retry</button>
+      <button id="audio-toggle-btn">Mute Music</button>
+      <button id="exit-btn">Exit</button>
+    </div>
+    <div class="win-container" id="win-container">
+      <h2>🎉 You Win!</h2>
+      <p>Congratulations on solving Level 3!</p>
+      <button id="next-btn">Next Level</button>
+      <button id="retry-level-btn">Retry</button>
+      <button id="home-btn">Home</button>
+    </div>
+    <div class="ground"></div>
+  </div>
+
+  <script>
+    // bubbles
+    const bubblesContainer = document.getElementById('bubbles');
+    for (let i = 0; i < 25; i++) {
+      const b = document.createElement('div'); b.className = 'bubble';
+      const size = 20 + Math.random() * 40;
+      b.style.width = b.style.height = `${size}px`;
+      b.style.left = `${Math.random() * 100}%`;
+      b.style.setProperty('--rise-duration', `${10 + Math.random() * 10}s`);
+      bubblesContainer.appendChild(b);
+    }
+
+    // elements
+    const puzzle = document.getElementById('puzzle');
+    const rotationCountEl = document.getElementById('rotation-count');
+    const timerDisplay = document.getElementById('timer');
+    const pauseBtn = document.getElementById('pause-btn');
+    const overlay = document.getElementById('overlay');
+    const menuContainer = document.getElementById('menu-container');
+    const resumeBtn = document.getElementById('resume-btn');
+    const retryBtn = document.getElementById('retry-btn');
+    const audioToggleBtn = document.getElementById('audio-toggle-btn');
+    const exitBtn = document.getElementById('exit-btn');
+    const bgMusic = document.getElementById('bg-music');
+    const winContainer = document.getElementById('win-container');
+    const nextBtn = document.getElementById('next-btn');
+    const homeBtn = document.getElementById('home-btn');
+    const retryLevelBtn = document.getElementById('retry-level-btn');
+
+    let rotationLimit = 40, currentRotations = 0, size = 4;
+    let rotations = [], timerInterval, timeLeft, isPaused = false, isMuted = false;
+
+    // audio init
+    function initAudio() { bgMusic.play().catch(() => {}); document.removeEventListener('click', initAudio); }
+    document.addEventListener('click', initAudio);
+    audioToggleBtn.addEventListener('click', () => { isMuted = !isMuted; bgMusic.muted = isMuted; audioToggleBtn.textContent = isMuted ? 'Play Music' : 'Mute Music'; });
+    retryLevelBtn.addEventListener('click', () => location.reload());
+
+    // puzzle
+    function createPuzzle() {
+      puzzle.innerHTML = '';
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          const piece = document.createElement('div');
+          piece.className = 'piece';
+          const idx = r * size + c;
+          piece.style.backgroundPosition = `${-c * 60}px ${-r * 60}px`;
+          rotations[idx] = 90 * Math.floor(Math.random() * 4);
+          piece.style.transform = `rotate(${rotations[idx]}deg)`;
+          piece.addEventListener('click', () => {
+  if (isPaused || currentRotations >= rotationLimit) return;
+  rotations[idx] += 90; // Rotate right (clockwise)
+  piece.style.transform = `rotate(${rotations[idx]}deg)`;
+  rotationCountEl.textContent = `Rotations: ${++currentRotations} / ${rotationLimit}`;
+
+  if (rotations.every(a => a % 360 === 0)) {
+    endLevel('🎉 You Win!', 'Congratulations on solving Level 3!', true);
+  } else if (currentRotations >= rotationLimit) {
+    endLevel('😞 Out of Moves!', 'You have no more rotations left.', false);
+  }
+});
+
+          puzzle.appendChild(piece);
+        }
+      }
+    }
+
+    // timer
+    function startLevelTimer(mins) {
+      timeLeft = mins * 60;
+      function update() {
+        if (!isPaused) {
+          const m = Math.floor(timeLeft/60);
+          const s = String(timeLeft%60).padStart(2, '0');
+          timerDisplay.textContent = `⏳ Time Left: ${m}:${s}`;
+          if (timeLeft-- <= 0) {
+            endLevel("⏰ Time's Up!", "Better luck next time.", false);
+          }
+        }
+      }
+      update();
+      timerInterval = setInterval(update, 1000);
+    }
+
+    // end-level
+    function endLevel(title, message, won) {
+      clearInterval(timerInterval);
+      overlay.style.display = winContainer.style.display = 'block';
+      winContainer.querySelector('h2').textContent = title;
+      winContainer.querySelector('p').textContent = message;
+      puzzle.querySelectorAll('.piece').forEach(p => p.style.pointerEvents = 'none');
+      nextBtn.style.display = won && nextIdx !== null ? 'block' : 'none';
+      retryLevelBtn.style.display = won ? 'none' : 'block';
+      homeBtn.style.display = 'block';
+    }
+
+    // pause
+    function togglePause() {
+      isPaused = !isPaused;
+      menuContainer.style.display = overlay.style.display = isPaused ? 'block' : 'none';
+    }
+    pauseBtn.addEventListener('click', togglePause);
+    resumeBtn.addEventListener('click', togglePause);
+    retryBtn.addEventListener('click', () => location.reload());
+    exitBtn.addEventListener('click', () => location.href = 'menu.html');
+
+    // navigation
+    const levelMap = ['one','two','three','four','five'];
+    const lvl = parseInt(new URLSearchParams(window.location.search).get('level')) || 3;
+    const nextIdx = lvl < levelMap.length ? lvl : null;
+    nextBtn.addEventListener('click', () => { if (nextIdx !== null) location.href = `${levelMap[nextIdx]}.html?level=${nextIdx+1}`; });
+    homeBtn.addEventListener('click', () => location.href = 'menu.html');
+
+    createPuzzle();
+    startLevelTimer(1);
+  </script>
+</body>
+</html>

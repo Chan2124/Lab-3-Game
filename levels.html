@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level Select</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #222;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Comic Sans MS', sans-serif;
+    }
+    .phone {
+      width: 360px; height: 640px;
+      border: 16px solid #333;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0,0,0,0.6);
+      position: relative;
+      background: linear-gradient(to bottom, #87ceeb, #4caf50 60%, #ffd700 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .header {
+      position: absolute; top: 20px; width: 100%;
+      display: flex; justify-content: space-between;
+      padding: 0 20px; align-items: center;
+    }
+    .back-btn {
+      width: 40px; height: 40px;
+      background: url('back-arrow.png') no-repeat center/contain;
+      cursor: pointer;
+    }
+    .badge {
+      width: 40px; height: 40px;
+      background: gold; border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .title {
+      font-size: 2rem; font-weight: bold;
+      color: #ffcf25; text-shadow: 2px 2px #000;
+      margin-bottom: 2rem; text-align: center;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-10px); }
+    }
+    .level-container {
+      display: flex; flex-wrap: wrap; gap: 20px;
+      justify-content: center; width: 100%;
+      padding: 0 20px;
+    }
+    .level-btn {
+      width: 80px; height: 80px;
+      background: radial-gradient(circle, #ffdd59 0%, #ffcf25 80%);
+      border: 3px solid #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; font-weight: bold;
+      color: #333; text-shadow: 1px 1px #fff;
+      transition: transform .3s, background-color .3s, box-shadow .3s;
+      cursor: pointer; text-decoration: none;
+    }
+    .level-btn:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px #ffd700;
+      background: radial-gradient(circle, #ffcf25 0%, #ffc107 100%);
+    }
+    .bubble {
+      position: absolute; width: 20px; height: 20px;
+      background: rgba(255,255,255,0.6); border-radius: 50%;
+      animation: float 4s infinite ease-in-out;
+    }
+    @keyframes float {
+      0%   { transform: translateY(0);    opacity: 1;   }
+      50%  { transform: translateY(-200px);opacity: .8;  }
+      100% { transform: translateY(-400px);opacity: 0;    }
+    }
+    .bubble:nth-child(1){ left:20%; animation-delay:0s; }
+    .bubble:nth-child(2){ left:50%; animation-delay:1s; }
+    .bubble:nth-child(3){ left:70%; animation-delay:2s; }
+
+    .footer {
+      position: absolute; bottom: 20px; text-align: center;
+    }
+    .exit-btn {
+      padding: 10px 20px; font-size: 1rem;
+      border: 3px solid #fff; background-color: #ff4b4b;
+      color: white; border-radius: 8px; box-shadow: 2px 2px #444;
+      cursor: pointer; transition: transform .2s, background-color .3s;
+      text-shadow: 1px 1px #000;
+    }
+    .exit-btn:hover {
+      transform: scale(1.1); background-color: #ff7373;
+    }
+
+    /* —— Audio Unlock Overlay —— */
+    #audio-overlay {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      color: #fff; display: flex;
+      justify-content: center; align-items: center;
+      text-align: center; padding: 1rem;
+      font-size: 1.2rem; cursor: pointer;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <!-- Floating Bubbles -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+
+    <!-- Header -->
+    <div class="header">
+      <a href="menu.html" class="back-btn" title="Back"></a>
+      <div class="badge" title="Badge"></div>
+    </div>
+
+    <!-- Title -->
+    <div class="title">Choose Your Level</div>
+
+    <!-- Level Buttons -->
+    <div class="level-container">
+      <a href="one.html?level=1" class="level-btn">1</a>
+      <a href="two.html?level=2" class="level-btn">2</a>
+      <a href="three.html?level=3" class="level-btn">3</a>
+      <a href="four.html?level=4" class="level-btn">4</a>
+      <a href="five.html?level=5" class="level-btn">5</a>
+    </div>
+
+    <!-- Footer Exit Button -->
+    <div class="footer">
+      <a href="menu.html" class="exit-btn">EXIT</a>
+    </div>
+
+    <!-- Hover Music -->
+    <audio id="hover-music" src="bubble.mp3" preload="auto"></audio>
+
+    <!-- Initial Tap To Unlock Audio -->
+    <div id="audio-overlay">
+      Choose any level to improve your matching skills!
+    </div>
+  </div>
+
+  <script>
+    const hoverMusic   = document.getElementById('hover-music');
+    const audioOverlay = document.getElementById('audio-overlay');
+
+    // 1) On first tap, play & pause to unlock audio context, then hide overlay
+    audioOverlay.addEventListener('click', () => {
+      hoverMusic.play()
+        .then(() => {
+          hoverMusic.pause();
+          hoverMusic.currentTime = 0;
+          audioOverlay.style.display = 'none';
+        })
+        .catch(() => {
+          // if it still fails, we still hide overlay so user can try hover
+          audioOverlay.style.display = 'none';
+        });
+    }, { once: true });
+
+    // 2) Hover handlers to play/pause the bubble sound
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        hoverMusic.play().catch(() => {});
+      });
+      btn.addEventListener('mouseleave', () => {
+        hoverMusic.pause();
+        hoverMusic.currentTime = 0;
+      });
+    });
+  </script>
+</body>
+</html>
